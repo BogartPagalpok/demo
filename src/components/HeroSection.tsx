@@ -19,7 +19,7 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
   }, [shoe.id]);
 
   return (
-    <section className="relative flex-1 flex items-center overflow-hidden px-8 md:px-14 lg:px-20 xl:px-24">
+    <section className="relative flex-1 flex flex-col lg:flex-row items-center overflow-hidden px-6 sm:px-10 md:px-16 lg:px-20 xl:px-24 min-h-[calc(100vh-6rem)]">
       {/* Giant Swoosh Watermark */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <img
@@ -36,20 +36,20 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
         />
       </div>
 
-      {/* Main Content Grid - Holds the columns for left and right content blocks */}
-      <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-4 items-center min-h-[calc(100vh-6rem)] pt-12 pb-4">
+      {/* Main Responsive Layout Layer */}
+      <div className="relative z-10 w-full flex flex-col lg:grid lg:grid-cols-[1.2fr_0.8fr] gap-6 lg:gap-4 items-center justify-between pt-8 pb-6 lg:py-0 min-h-[calc(100vh-6rem)]">
 
-        {/* Left: Typography Block */}
+        {/* Content Segment: Typography and CTAs */}
         <div
-          className="flex flex-col justify-center gap-5 z-10"
+          className="flex flex-col justify-center text-center lg:text-left items-center lg:items-start gap-4 md:gap-5 z-10 w-full"
           style={{
             opacity: transitioning ? 0 : 1,
-            transform: transitioning ? 'translateX(-24px)' : 'translateX(0)',
+            transform: transitioning ? 'translateY(-15px) lg:translateY(0) lg:translateX(-24px)' : 'translateY(0) translateX(0)',
             transition: 'opacity 0.5s ease, transform 0.5s ease',
           }}
         >
           {/* Tags */}
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 flex-wrap justify-center lg:justify-start order-1">
             {shoe.tags.map((tag) => (
               <span
                 key={tag}
@@ -65,8 +65,8 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
             ))}
           </div>
 
-          {/* Hero Title */}
-          <div>
+          {/* Hero Title Stack - Sits natively at the top on Mobile layout views */}
+          <div className="order-2">
             <h1 className="font-black uppercase leading-[0.9] tracking-tight">
               <span
                 className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-white"
@@ -92,13 +92,16 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
             </p>
           </div>
 
+          {/* Spacer to push mobile elements below the absolute centered shoe viewport */}
+          <div className="h-[28vh] sm:h-[35vh] lg:hidden order-3" />
+
           {/* Description */}
-          <p className="text-sm text-white/50 max-w-sm leading-relaxed font-light hidden md:block">
+          <p className="text-xs sm:text-sm text-white/50 max-w-sm leading-relaxed font-light hidden md:block order-4">
             {shoe.description}
           </p>
 
           {/* Rating */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 order-5 justify-center lg:justify-start">
             <div className="flex gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} size={11} className="fill-current" style={{ color: shoe.theme.accent }} />
@@ -107,21 +110,22 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
             <span className="text-xs text-white/40 font-medium">4.9 (2.4k reviews)</span>
           </div>
 
-          {/* Price + CTA */}
-          <div className="flex items-center gap-4 flex-wrap">
+          {/* Price */}
+          <div className="flex items-center gap-4 order-6 justify-center lg:justify-start">
             <div>
               <span className="text-2xl font-black text-white">{shoe.price}</span>
               <span className="text-sm text-white/30 line-through ml-2">{shoe.originalPrice}</span>
             </div>
           </div>
 
-          <div className="flex gap-3 flex-wrap">
+          {/* Action Row */}
+          <div className="flex gap-3 flex-wrap justify-center lg:justify-start order-7 w-full sm:w-auto">
             {/* Preview Button */}
             <button
               onMouseEnter={() => setLearnHovered(true)}
               onMouseLeave={() => setLearnHovered(false)}
               onClick={onLearnMore}
-              className="group flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300"
+              className="group flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 flex-1 sm:flex-initial"
               style={{
                 border: `1.5px solid ${shoe.theme.buttonBorder}`,
                 backgroundColor: learnHovered ? shoe.theme.accent : 'transparent',
@@ -138,7 +142,7 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
               onMouseEnter={() => setAddHovered(true)}
               onMouseLeave={() => setAddHovered(false)}
               onClick={onAddToCart}
-              className="px-6 py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 text-white"
+              className="px-6 py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 text-white flex-1 sm:flex-initial"
               style={{
                 backgroundColor: addHovered ? shoe.theme.accent : `rgba(255,255,255,0.08)`,
                 border: `1.5px solid rgba(255,255,255,0.1)`,
@@ -150,9 +154,9 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
           </div>
         </div>
 
-        {/* Right: Outlined Slogan + Details */}
+        {/* Right Desktop Column: Outlined Slogan + Details */}
         <div
-          className="hidden lg:flex flex-col items-end justify-center gap-6 z-10"
+          className="hidden lg:flex flex-col items-end justify-center gap-6 z-10 w-full"
           style={{
             opacity: transitioning ? 0 : 1,
             transform: transitioning ? 'translateX(24px)' : 'translateX(0)',
@@ -203,9 +207,9 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
         </div>
       </div>
 
-      {/* Top Absolute Overlay Layer - Fixed responsive layout centering */}
+      {/* Centerpiece Layer: Large shoe centered vertically on mobile, shifted right on desktop */}
       <div
-        className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center pl-0 lg:pl-[12vw]"
+        className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center pl-0 lg:pl-[12vw] top-[6rem] lg:top-0 h-[50vh] lg:h-full"
         style={{
           opacity: transitioning ? 0 : 1,
           transform: transitioning ? 'scale(0.95) translateY(15px)' : 'scale(1) translateY(0)',
@@ -214,13 +218,13 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
       >
         {/* Aura Glow behind the overlay shoe */}
         <div
-          className="absolute rounded-full blur-3xl w-[24rem] h-[24rem] md:w-[40rem] md:h-[40rem]"
+          className="absolute rounded-full blur-3xl w-[20rem] h-[20rem] md:w-[35rem] md:h-[35rem]"
           style={{
             background: `radial-gradient(circle, rgba(${shoe.theme.glowRgb}, 0.28) 0%, transparent 70%)`,
           }}
         />
 
-        <div className="relative shoe-float w-full max-w-[20rem] sm:max-w-[26rem] md:max-w-[36rem] lg:max-w-[46rem] xl:max-w-[54rem] px-4 sm:px-0">
+        <div className="relative shoe-float w-full max-w-[18rem] sm:max-w-[24rem] md:max-w-[34rem] lg:max-w-[46rem] xl:max-w-[54rem]">
           <img
             src={shoe.image}
             alt={shoe.name}
@@ -228,7 +232,7 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
             className="w-full h-full object-contain transition-opacity duration-500"
             style={{
               opacity: imageLoaded ? 1 : 0,
-              filter: `drop-shadow(0 32px 64px rgba(${shoe.theme.glowRgb}, 0.45)) drop-shadow(0 16px 32px rgba(0,0,0,0.75))`,
+              filter: `drop-shadow(0 24px 48px rgba(${shoe.theme.glowRgb}, 0.45)) drop-shadow(0 12px 24px rgba(0,0,0,0.75))`,
               transform: 'rotate(-12deg)',
             }}
           />

@@ -51,7 +51,7 @@ export const shoes: Shoe[] = [
       buttonHover: '#a3e635',
     },
     sizes: [7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 12, 13],
-    tags: ['RACE DAY ELITE', 'SOLD OUT'],
+    tags: ['RACE DAY ELITE', 'SOLD OUT', 'volt'],
   },
   {
     id: '02',
@@ -77,7 +77,7 @@ export const shoes: Shoe[] = [
       buttonHover: '#ff4500',
     },
     sizes: [6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 11, 12, 13],
-    tags: ['FAST CAPTURE'],
+    tags: ['FAST CAPTURE', 'red'],
   },
   {
     id: '03',
@@ -103,7 +103,7 @@ export const shoes: Shoe[] = [
       buttonHover: '#ef233c',
     },
     sizes: [7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 12, 13],
-    tags: ['HIGH RETENTION'],
+    tags: ['HIGH RETENTION', 'cherry'],
   },
   {
     id: '04',
@@ -129,7 +129,7 @@ export const shoes: Shoe[] = [
       buttonHover: '#06b6d4',
     },
     sizes: [7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 13],
-    tags: ['MAX ZOOM X'],
+    tags: ['MAX ZOOM X', 'blue'],
   },
   {
     id: '05',
@@ -155,7 +155,7 @@ export const shoes: Shoe[] = [
       buttonHover: '#a855f7',
     },
     sizes: [6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 11, 12],
-    tags: ['NEXT-GEN TECH'],
+    tags: ['NEXT-GEN TECH', 'purple'],
   },
 ];
 

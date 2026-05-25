@@ -56,7 +56,7 @@ export default function HeroSection({
     const touchEndY = e.changedTouches[0].clientY;
     const deltaY = touchStartY.current - touchEndY;
 
-    if (Math.abs(deltaY) > 50) {
+    if (Math.abs(deltaY) > 40) { // Slightly optimized threshold for better mobile tracking response
       if (deltaY > 0 && onNextShoe) {
         onNextShoe();
         lastScrollTime.current = now;
@@ -72,7 +72,7 @@ export default function HeroSection({
       onWheel={handleWheel}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
-      className="relative flex-1 flex flex-col lg:flex-row items-center overflow-hidden px-6 sm:px-10 md:px-16 lg:px-20 xl:px-24 min-h-[calc(100vh-6rem)] touch-none select-none"
+      className="relative flex-1 flex flex-col lg:flex-row items-center overflow-hidden px-6 sm:px-10 md:px-16 lg:px-20 xl:px-24 min-h-[calc(100vh-6rem)] select-none"
     >
       {/* Giant Swoosh Watermark */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -135,7 +135,7 @@ export default function HeroSection({
                   style={{
                     color: shoe.theme.accent,
                     textShadow: `0 0 40px rgba(${shoe.theme.glowRgb}, 0.5)`,
-                }}
+                  }}
                 >
                   {shoe.line2}
                 </span>
@@ -149,15 +149,15 @@ export default function HeroSection({
             </div>
           </div>
 
-          {/* Center Showcase Container (Mobile) */}
-          <div className="relative flex lg:hidden items-center justify-center w-full flex-[1.3] my-2 min-h-[28vh] max-h-[38vh] pointer-events-none">
+          {/* Center Showcase Container (Mobile) - Enabled pointer events to capture touch swipe parameters cleanly */}
+          <div className="relative flex lg:hidden items-center justify-center w-full flex-[1.3] my-2 min-h-[28vh] max-h-[38vh]">
             <div
-              className="absolute rounded-full blur-3xl w-[18rem] h-[18rem] sm:w-[24rem] sm:h-[24rem]"
+              className="absolute rounded-full blur-3xl w-[18rem] h-[18rem] sm:w-[24rem] sm:h-[24rem] pointer-events-none"
               style={{
                 background: `radial-gradient(circle, rgba(${shoe.theme.glowRgb}, 0.28) 0%, transparent 70%)`,
               }}
             />
-            <div className="relative shoe-float w-full max-w-[18rem] sm:max-w-[22rem] md:max-w-[26rem]">
+            <div className="relative shoe-float w-full max-w-[18rem] sm:max-w-[22rem] md:max-w-[26rem] pointer-events-none">
               <img
                 src={shoe.image}
                 alt={shoe.name}
@@ -232,7 +232,7 @@ export default function HeroSection({
               </button>
             </div>
 
-            {/* ILLUSIVE STUDIO Brand Signature - Rendered inline for Mobile layout positions */}
+            {/* ILLUSIVE STUDIO Brand Signature */}
             <div className="flex flex-col items-center pt-4 lg:hidden opacity-80 mt-1">
               <span className="text-[9px] font-black tracking-[0.4em] text-white/50 uppercase leading-none">
                 ILLUSIVE STUDIO

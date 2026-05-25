@@ -22,17 +22,18 @@ export default function App() {
     const targetColor = params.get('color'); // Reads 'volt', 'purple', etc.
     
     if (targetColor) {
-      // Compares query parameter value against shoe tags or properties
+      // Compares query parameter value against shoe tags, id, or subtitle properties
       const matchIndex = shoes.findIndex(s => 
-        s.tags.some(t => t.toLowerCase().includes(targetColor.toLowerCase())) ||
-        s.subtitle.toLowerCase().includes(targetColor.toLowerCase())
+        s.id.toLowerCase().includes(targetColor.toLowerCase()) ||
+        s.subtitle.toLowerCase().includes(targetColor.toLowerCase()) ||
+        s.tags.some(t => t.toLowerCase().includes(targetColor.toLowerCase()))
       );
       
       if (matchIndex !== -1) {
         setCurrentIndex(matchIndex);
       }
     }
-  }, []);
+  }, []); // Only runs once on mount
 
   const currentShoe = shoes[currentIndex];
 

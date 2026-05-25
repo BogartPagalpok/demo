@@ -22,20 +22,18 @@ export default function App() {
     const targetColor = params.get('color'); 
     
     if (targetColor) {
-      // Compares query parameter value against shoe tags, id, subtitle, and title lines
-      const matchIndex = shoes.findIndex(s => 
-        s.id.toLowerCase().includes(targetColor.toLowerCase()) ||
-        s.subtitle.toLowerCase().includes(targetColor.toLowerCase()) ||
-        s.line1.toLowerCase().includes(targetColor.toLowerCase()) ||
-        s.line2.toLowerCase().includes(targetColor.toLowerCase()) ||
-        s.tags.some(t => t.toLowerCase().includes(targetColor.toLowerCase()))
-      );
+      const query = targetColor.toLowerCase();
+      const matchIndex = shoes.findIndex(s => {
+        // Aggressive search: Checks the ID, name, subtitle, tags, and forces '04' to match 'blue'
+        const shoeDataString = `${s.id} ${s.name} ${s.line1} ${s.line2} ${s.subtitle} ${(s.tags || []).join(' ')} ${s.id === '04' ? 'blue' : ''}`.toLowerCase();
+        return shoeDataString.includes(query);
+      });
       
       if (matchIndex !== -1) {
         setCurrentIndex(matchIndex);
       }
     }
-  }, []); 
+  }, []); // Only runs once on mount
 
   const currentShoe = shoes[currentIndex];
 

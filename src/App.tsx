@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { shoes } from './data/shoes';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
@@ -16,6 +16,24 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
+  // Parse inbound ad campaign query paths before drawing layout elements
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const targetColor = params.get('color'); // Reads 'volt', 'purple', etc.
+    
+    if (targetColor) {
+      // Compares query parameter value against shoe tags or properties
+      const matchIndex = shoes.findIndex(s => 
+        s.tags.some(t => t.toLowerCase().includes(targetColor.toLowerCase())) ||
+        s.subtitle.toLowerCase().includes(targetColor.toLowerCase())
+      );
+      
+      if (matchIndex !== -1) {
+        setCurrentIndex(matchIndex);
+      }
+    }
+  }, []);
+
   const currentShoe = shoes[currentIndex];
 
   const navigate = useCallback(
@@ -30,7 +48,6 @@ export default function App() {
     [transitioning, currentIndex]
   );
 
-  // Next and Previous handlers to catch the scroll emissions from the HeroSection
   const handleNextShoe = useCallback(() => {
     const nextIndex = (currentIndex + 1) % shoes.length;
     navigate(nextIndex);
@@ -71,7 +88,6 @@ export default function App() {
         transition: 'background-color 0.6s ease',
       }}
     >
-      {/* Ambient Background Layers */}
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{
@@ -87,7 +103,6 @@ export default function App() {
         }}
       />
 
-      {/* Grain texture overlay */}
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-[0.025]"
         style={{
@@ -97,7 +112,6 @@ export default function App() {
         }}
       />
 
-      {/* Subtle grid */}
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-[0.02]"
         style={{
@@ -106,7 +120,6 @@ export default function App() {
         }}
       />
 
-      {/* Navbar */}
       <Navbar
         theme={currentShoe.theme}
         cartCount={cartCount}
@@ -115,7 +128,6 @@ export default function App() {
         menuOpen={menuOpen}
       />
 
-      {/* Pagination Dots */}
       <PaginationDots
         total={shoes.length}
         active={currentIndex}
@@ -123,7 +135,6 @@ export default function App() {
         onChange={navigate}
       />
 
-      {/* Hero with scroll triggers wired up */}
       <HeroSection
         shoe={currentShoe}
         transitioning={transitioning}
@@ -133,7 +144,6 @@ export default function App() {
         onPrevShoe={handlePrevShoe}
       />
 
-      {/* Modals & Drawers */}
       <CartDrawer
         open={cartOpen}
         items={cartItems}

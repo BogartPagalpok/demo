@@ -203,9 +203,9 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
         </div>
       </div>
 
-      {/* Top Absolute Overlay Layer: Adjusted pl tracking factor to sit beautifully in the sweet spot */}
+      {/* Top Absolute Overlay Layer - Fixed responsive layout centering */}
       <div
-        className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center pl-[12vw]"
+        className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center pl-0 lg:pl-[12vw]"
         style={{
           opacity: transitioning ? 0 : 1,
           transform: transitioning ? 'scale(0.95) translateY(15px)' : 'scale(1) translateY(0)',
@@ -214,13 +214,13 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
       >
         {/* Aura Glow behind the overlay shoe */}
         <div
-          className="absolute rounded-full blur-3xl w-[40rem] h-[40rem]"
+          className="absolute rounded-full blur-3xl w-[24rem] h-[24rem] md:w-[40rem] md:h-[40rem]"
           style={{
             background: `radial-gradient(circle, rgba(${shoe.theme.glowRgb}, 0.28) 0%, transparent 70%)`,
           }}
         />
 
-        <div className="relative shoe-float w-full max-w-[34rem] md:max-w-[42rem] lg:max-w-[50rem] xl:max-w-[58rem]">
+        <div className="relative shoe-float w-full max-w-[20rem] sm:max-w-[26rem] md:max-w-[36rem] lg:max-w-[46rem] xl:max-w-[54rem] px-4 sm:px-0">
           <img
             src={shoe.image}
             alt={shoe.name}
@@ -234,7 +234,7 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
           />
           {/* Ground Contact Depth Shadow */}
           <div
-            className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 w-4/5 h-8 rounded-full blur-2xl"
+            className="absolute bottom-[-10px] md:bottom-[-20px] left-1/2 -translate-x-1/2 w-4/5 h-4 md:h-8 rounded-full blur-2xl"
             style={{ backgroundColor: `rgba(${shoe.theme.glowRgb}, 0.3)` }}
           />
         </div>

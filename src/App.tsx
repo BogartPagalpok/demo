@@ -30,6 +30,17 @@ export default function App() {
     [transitioning, currentIndex]
   );
 
+  // Next and Previous handlers to catch the scroll emissions from the HeroSection
+  const handleNextShoe = useCallback(() => {
+    const nextIndex = (currentIndex + 1) % shoes.length;
+    navigate(nextIndex);
+  }, [currentIndex, navigate]);
+
+  const handlePrevShoe = useCallback(() => {
+    const prevIndex = (currentIndex - 1 + shoes.length) % shoes.length;
+    navigate(prevIndex);
+  }, [currentIndex, navigate]);
+
   const handleAddToCart = useCallback(
     (size: number) => {
       setCartItems((prev) => {
@@ -112,12 +123,14 @@ export default function App() {
         onChange={navigate}
       />
 
-      {/* Hero */}
+      {/* Hero with scroll triggers wired up */}
       <HeroSection
         shoe={currentShoe}
         transitioning={transitioning}
         onLearnMore={() => setVideoModalOpen(true)}
         onAddToCart={() => setSizeModalOpen(true)}
+        onNextShoe={handleNextShoe}
+        onPrevShoe={handlePrevShoe}
       />
 
       {/* Modals & Drawers */}

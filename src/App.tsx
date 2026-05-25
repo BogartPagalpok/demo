@@ -19,13 +19,15 @@ export default function App() {
   // Parse inbound ad campaign query paths before drawing layout elements
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const targetColor = params.get('color'); // Reads 'volt', 'purple', etc.
+    const targetColor = params.get('color'); 
     
     if (targetColor) {
-      // Compares query parameter value against shoe tags, id, or subtitle properties
+      // Compares query parameter value against shoe tags, id, subtitle, and title lines
       const matchIndex = shoes.findIndex(s => 
         s.id.toLowerCase().includes(targetColor.toLowerCase()) ||
         s.subtitle.toLowerCase().includes(targetColor.toLowerCase()) ||
+        s.line1.toLowerCase().includes(targetColor.toLowerCase()) ||
+        s.line2.toLowerCase().includes(targetColor.toLowerCase()) ||
         s.tags.some(t => t.toLowerCase().includes(targetColor.toLowerCase()))
       );
       
@@ -33,7 +35,7 @@ export default function App() {
         setCurrentIndex(matchIndex);
       }
     }
-  }, []); // Only runs once on mount
+  }, []); 
 
   const currentShoe = shoes[currentIndex];
 

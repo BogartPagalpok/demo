@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Star } from 'lucide-react';
 import { Shoe } from '../data/shoes';
 
@@ -7,19 +7,73 @@ interface HeroSectionProps {
   transitioning: boolean;
   onLearnMore: () => void;
   onAddToCart: () => void;
+  onNextShoe?: () => void;
+  onPrevShoe?: () => void;
 }
 
-export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToCart }: HeroSectionProps) {
+export default function HeroSection({ 
+  shoe, 
+  transitioning, 
+  onLearnMore, 
+  onAddToCart,
+  onNextShoe,
+  onPrevShoe 
+}: HeroSectionProps) {
   const [learnHovered, setLearnHovered] = useState(false);
   const [addHovered, setAddHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  
+  const touchStartY = useRef<number>(0);
+  const lastScrollTime = useRef<number>(0);
 
   useEffect(() => {
     setImageLoaded(false);
   }, [shoe.id]);
 
+  const handleWheel = (e: React.WheelEvent) => {
+    const now = Date.now();
+    if (now - lastScrollTime.current < 600) return;
+
+    if (Math.abs(e.deltaY) > 20) {
+      if (e.deltaY > 0 && onNextShoe) {
+        onNextShoe();
+        lastScrollTime.current = now;
+      } else if (e.deltaY < 0 && onPrevShoe) {
+        onPrevShoe();
+        lastScrollTime.current = now;
+      }
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const now = Date.now();
+    if (now - lastScrollTime.current < 600) return;
+
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchStartY.current - touchEndY;
+
+    if (Math.abs(deltaY) > 50) {
+      if (deltaY > 0 && onNextShoe) {
+        onNextShoe();
+        lastScrollTime.current = now;
+      } else if (deltaY < 0 && onPrevShoe) {
+        onPrevShoe();
+        lastScrollTime.current = now;
+      }
+    }
+  };
+
   return (
-    <section className="relative flex-1 flex flex-col lg:flex-row items-center overflow-hidden px-6 sm:px-10 md:px-16 lg:px-20 xl:px-24 min-h-[calc(100vh-6rem)]">
+    <section 
+      onWheel={handleWheel}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      className="relative flex-1 flex flex-col lg:flex-row items-center overflow-hidden px-6 sm:px-10 md:px-16 lg:px-20 xl:px-24 min-h-[calc(100vh-6rem)] touch-none select-none"
+    >
       {/* Giant Swoosh Watermark */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <img
@@ -36,125 +90,161 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
         />
       </div>
 
-      {/* Main Responsive Layout Layer */}
-      <div className="relative z-10 w-full flex flex-col lg:grid lg:grid-cols-[1.2fr_0.8fr] gap-6 lg:gap-4 items-center justify-between pt-8 pb-6 lg:py-0 min-h-[calc(100vh-6rem)]">
-
-        {/* Content Segment: Typography and CTAs */}
+      {/* Main Responsive Layout Grid */}
+      <div className="relative z-10 w-full flex flex-col lg:grid lg:grid-cols-[1.2fr_0.8fr] items-stretch justify-between pt-6 pb-4 lg:py-0 min-h-[calc(100vh-6rem)]">
+        
+        {/* Mobile/Desktop Content Coordinator */}
         <div
-          className="flex flex-col justify-center text-center lg:text-left items-center lg:items-start gap-4 md:gap-5 z-10 w-full"
+          className="flex flex-col flex-1 lg:flex-initial justify-between lg:justify-center text-center lg:text-left items-center lg:items-start gap-4 lg:gap-5 z-10 w-full"
           style={{
             opacity: transitioning ? 0 : 1,
             transform: transitioning ? 'translateY(-15px) lg:translateY(0) lg:translateX(-24px)' : 'translateY(0) translateX(0)',
             transition: 'opacity 0.5s ease, transform 0.5s ease',
           }}
         >
-          {/* Tags */}
-          <div className="flex gap-2 flex-wrap justify-center lg:justify-start order-1">
-            {shoe.tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-[9px] font-black tracking-[0.3em] px-3 py-1 rounded-full uppercase border"
-                style={{
-                  borderColor: `rgba(${shoe.theme.glowRgb}, 0.5)`,
-                  color: shoe.theme.accent,
-                  backgroundColor: `rgba(${shoe.theme.glowRgb}, 0.08)`,
-                }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          {/* Hero Title Stack - Sits natively at the top on Mobile layout views */}
-          <div className="order-2">
-            <h1 className="font-black uppercase leading-[0.9] tracking-tight">
-              <span
-                className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-white"
-                style={{ textShadow: `0 0 80px rgba(${shoe.theme.glowRgb}, 0.3)` }}
-              >
-                {shoe.line1}
-              </span>
-              <span
-                className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
-                style={{
-                  color: shoe.theme.accent,
-                  textShadow: `0 0 40px rgba(${shoe.theme.glowRgb}, 0.5)`,
-                }}
-              >
-                {shoe.line2}
-              </span>
-            </h1>
-            <p
-              className="mt-3 text-xs md:text-sm font-bold tracking-[0.35em] uppercase"
-              style={{ color: `rgba(${shoe.theme.glowRgb}, 0.8)` }}
-            >
-              {shoe.subtitle}
-            </p>
-          </div>
-
-          {/* Spacer to push mobile elements below the absolute centered shoe viewport */}
-          <div className="h-[28vh] sm:h-[35vh] lg:hidden order-3" />
-
-          {/* Description */}
-          <p className="text-xs sm:text-sm text-white/50 max-w-sm leading-relaxed font-light hidden md:block order-4">
-            {shoe.description}
-          </p>
-
-          {/* Rating */}
-          <div className="flex items-center gap-2 order-5 justify-center lg:justify-start">
-            <div className="flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} size={11} className="fill-current" style={{ color: shoe.theme.accent }} />
+          {/* Top Text Cluster */}
+          <div className="flex flex-col items-center lg:items-start gap-3 w-full">
+            {/* Tags */}
+            <div className="flex gap-2 flex-wrap justify-center lg:justify-start">
+              {shoe.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[9px] font-black tracking-[0.3em] px-3 py-1 rounded-full uppercase border"
+                  style={{
+                    borderColor: `rgba(${shoe.theme.glowRgb}, 0.5)`,
+                    color: shoe.theme.accent,
+                    backgroundColor: `rgba(${shoe.theme.glowRgb}, 0.08)`,
+                  }}
+                >
+                  {tag}
+                </span>
               ))}
             </div>
-            <span className="text-xs text-white/40 font-medium">4.9 (2.4k reviews)</span>
-          </div>
 
-          {/* Price */}
-          <div className="flex items-center gap-4 order-6 justify-center lg:justify-start">
+            {/* Title Block */}
             <div>
-              <span className="text-2xl font-black text-white">{shoe.price}</span>
-              <span className="text-sm text-white/30 line-through ml-2">{shoe.originalPrice}</span>
+              <h1 className="font-black uppercase leading-[0.9] tracking-tight">
+                <span
+                  className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-white"
+                  style={{ textShadow: `0 0 80px rgba(${shoe.theme.glowRgb}, 0.3)` }}
+                >
+                  {shoe.line1}
+                </span>
+                <span
+                  className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
+                  style={{
+                    color: shoe.theme.accent,
+                    textShadow: `0 0 40px rgba(${shoe.theme.glowRgb}, 0.5)`,
+                }}
+                >
+                  {shoe.line2}
+                </span>
+              </h1>
+              <p
+                className="mt-2.5 text-xs md:text-sm font-bold tracking-[0.35em] uppercase"
+                style={{ color: `rgba(${shoe.theme.glowRgb}, 0.8)` }}
+              >
+                {shoe.subtitle}
+              </p>
             </div>
           </div>
 
-          {/* Action Row */}
-          <div className="flex gap-3 flex-wrap justify-center lg:justify-start order-7 w-full sm:w-auto">
-            {/* Preview Button */}
-            <button
-              onMouseEnter={() => setLearnHovered(true)}
-              onMouseLeave={() => setLearnHovered(false)}
-              onClick={onLearnMore}
-              className="group flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 flex-1 sm:flex-initial"
+          {/* Center Showcase Container (Mobile) */}
+          <div className="relative flex lg:hidden items-center justify-center w-full flex-[1.3] my-2 min-h-[28vh] max-h-[38vh] pointer-events-none">
+            <div
+              className="absolute rounded-full blur-3xl w-[18rem] h-[18rem] sm:w-[24rem] sm:h-[24rem]"
               style={{
-                border: `1.5px solid ${shoe.theme.buttonBorder}`,
-                backgroundColor: learnHovered ? shoe.theme.accent : 'transparent',
-                color: learnHovered ? '#ffffff' : shoe.theme.accent,
-                boxShadow: learnHovered ? `0 0 24px rgba(${shoe.theme.glowRgb}, 0.5)` : 'none',
+                background: `radial-gradient(circle, rgba(${shoe.theme.glowRgb}, 0.28) 0%, transparent 70%)`,
               }}
-            >
-              Preview
-              <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
-            </button>
+            />
+            <div className="relative shoe-float w-full max-w-[18rem] sm:max-w-[22rem] md:max-w-[26rem]">
+              <img
+                src={shoe.image}
+                alt={shoe.name}
+                className="w-full h-full object-contain"
+                style={{
+                  filter: `drop-shadow(0 20px 40px rgba(${shoe.theme.glowRgb}, 0.45)) drop-shadow(0 10px 20px rgba(0,0,0,0.75))`,
+                  transform: 'rotate(-12deg)',
+                }}
+              />
+              <div
+                className="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-4/5 h-4 rounded-full blur-xl"
+                style={{ backgroundColor: `rgba(${shoe.theme.glowRgb}, 0.3)` }}
+              />
+            </div>
+          </div>
 
-            {/* Add to Bag Button */}
-            <button
-              onMouseEnter={() => setAddHovered(true)}
-              onMouseLeave={() => setAddHovered(false)}
-              onClick={onAddToCart}
-              className="px-6 py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 text-white flex-1 sm:flex-initial"
-              style={{
-                backgroundColor: addHovered ? shoe.theme.accent : `rgba(255,255,255,0.08)`,
-                border: `1.5px solid rgba(255,255,255,0.1)`,
-                boxShadow: addHovered ? `0 0 24px rgba(${shoe.theme.glowRgb}, 0.4)` : 'none',
-              }}
-            >
-              Add to Bag
-            </button>
+          {/* Bottom Content Cluster */}
+          <div className="flex flex-col items-center lg:items-start gap-3 md:gap-4 w-full">
+            {/* Description */}
+            <p className="text-xs sm:text-sm text-white/50 max-w-sm leading-relaxed font-light hidden md:block">
+              {shoe.description}
+            </p>
+
+            {/* Rating */}
+            <div className="flex items-center gap-2 justify-center lg:justify-start">
+              <div className="flex gap-0.5">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={11} className="fill-current" style={{ color: shoe.theme.accent }} />
+                ))}
+              </div>
+              <span className="text-xs text-white/40 font-medium">4.9 (2.4k reviews)</span>
+            </div>
+
+            {/* Price */}
+            <div className="flex items-center gap-4 justify-center lg:justify-start">
+              <div>
+                <span className="text-2xl font-black text-white">{shoe.price}</span>
+                <span className="text-sm text-white/30 line-through ml-2">{shoe.originalPrice}</span>
+              </div>
+            </div>
+
+            {/* Action Row */}
+            <div className="flex gap-3 flex-wrap justify-center lg:justify-start w-full sm:w-auto mt-1">
+              <button
+                onMouseEnter={() => setLearnHovered(true)}
+                onMouseLeave={() => setLearnHovered(false)}
+                onClick={onLearnMore}
+                className="group flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 flex-1 sm:flex-initial"
+                style={{
+                  border: `1.5px solid ${shoe.theme.buttonBorder}`,
+                  backgroundColor: learnHovered ? shoe.theme.accent : 'transparent',
+                  color: learnHovered ? '#ffffff' : shoe.theme.accent,
+                  boxShadow: learnHovered ? `0 0 24px rgba(${shoe.theme.glowRgb}, 0.5)` : 'none',
+                }}
+              >
+                Preview
+                <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
+              </button>
+
+              <button
+                onMouseEnter={() => setAddHovered(true)}
+                onMouseLeave={() => setAddHovered(false)}
+                onClick={onAddToCart}
+                className="px-6 py-3 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 text-white flex-1 sm:flex-initial"
+                style={{
+                  backgroundColor: addHovered ? shoe.theme.accent : `rgba(255,255,255,0.08)`,
+                  border: `1.5px solid rgba(255,255,255,0.1)`,
+                  boxShadow: addHovered ? `0 0 24px rgba(${shoe.theme.glowRgb}, 0.4)` : 'none',
+                }}
+              >
+                Add to Bag
+              </button>
+            </div>
+
+            {/* ILLUSIVE STUDIO Brand Signature - Rendered inline for Mobile layout positions */}
+            <div className="flex flex-col items-center pt-4 lg:hidden opacity-80 mt-1">
+              <span className="text-[9px] font-black tracking-[0.4em] text-white/50 uppercase leading-none">
+                ILLUSIVE STUDIO
+              </span>
+              <span className="text-[7px] font-bold tracking-[0.2em] text-white/20 uppercase mt-1">
+                CONCEPT DESIGN LAB
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Right Desktop Column: Outlined Slogan + Details */}
+        {/* Right Desktop Column */}
         <div
           className="hidden lg:flex flex-col items-end justify-center gap-6 z-10 w-full"
           style={{
@@ -207,24 +297,23 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
         </div>
       </div>
 
-      {/* Centerpiece Layer: Large shoe centered vertically on mobile, shifted right on desktop */}
+      {/* Absolute Overlay Layer: Desktop Presentation Viewport Only */}
       <div
-        className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center pl-0 lg:pl-[12vw] top-[6rem] lg:top-0 h-[50vh] lg:h-full"
+        className="hidden lg:flex absolute inset-0 z-20 pointer-events-none items-center justify-center pl-[12vw]"
         style={{
           opacity: transitioning ? 0 : 1,
           transform: transitioning ? 'scale(0.95) translateY(15px)' : 'scale(1) translateY(0)',
           transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
-        {/* Aura Glow behind the overlay shoe */}
         <div
-          className="absolute rounded-full blur-3xl w-[20rem] h-[20rem] md:w-[35rem] md:h-[35rem]"
+          className="absolute rounded-full blur-3xl w-[40rem] h-[40rem]"
           style={{
             background: `radial-gradient(circle, rgba(${shoe.theme.glowRgb}, 0.28) 0%, transparent 70%)`,
           }}
         />
 
-        <div className="relative shoe-float w-full max-w-[18rem] sm:max-w-[24rem] md:max-w-[34rem] lg:max-w-[46rem] xl:max-w-[54rem]">
+        <div className="relative shoe-float w-full max-w-[34rem] md:max-w-[42rem] lg:max-w-[50rem] xl:max-w-[58rem]">
           <img
             src={shoe.image}
             alt={shoe.name}
@@ -232,13 +321,12 @@ export default function HeroSection({ shoe, transitioning, onLearnMore, onAddToC
             className="w-full h-full object-contain transition-opacity duration-500"
             style={{
               opacity: imageLoaded ? 1 : 0,
-              filter: `drop-shadow(0 24px 48px rgba(${shoe.theme.glowRgb}, 0.45)) drop-shadow(0 12px 24px rgba(0,0,0,0.75))`,
+              filter: `drop-shadow(0 32px 64px rgba(${shoe.theme.glowRgb}, 0.45)) drop-shadow(0 16px 32px rgba(0,0,0,0.75))`,
               transform: 'rotate(-12deg)',
             }}
           />
-          {/* Ground Contact Depth Shadow */}
           <div
-            className="absolute bottom-[-10px] md:bottom-[-20px] left-1/2 -translate-x-1/2 w-4/5 h-4 md:h-8 rounded-full blur-2xl"
+            className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 w-4/5 h-8 rounded-full blur-2xl"
             style={{ backgroundColor: `rgba(${shoe.theme.glowRgb}, 0.3)` }}
           />
         </div>
